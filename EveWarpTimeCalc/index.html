@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Warp Time Calculator</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        .container {
+            max-width: 530px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Warp Time Calculator</h1>
+        <label for="speed">Warp Speed (au/s):</label>
+        <input type="number" id="speed" step="0.01">
+        <label for="distanceKm">Distance (km):</label>
+        <input type="number" id="distanceKm" step="1">
+        <label for="distanceAu">Distance (au):</label>
+        <input type="number" id="distanceAu" step="0.01">
+        <button onclick="calculateTime()">Calculate</button>
+        <div id="result">Enter Warp Speed (au/s) and either "Distance (km)" or "Distance (au)</div>
+    </div>
+
+    <script>
+        const AU_IN_M = 149597870700;
+
+        function calculateTimeInWarp(maxWarpSpeed, maxSubwarpSpeed, warpDist) {
+            const kAccel = maxWarpSpeed;
+            const kDecel = Math.min(maxWarpSpeed / 3, 2);
+            const warpDropoutSpeed = Math.min(maxSubwarpSpeed / 2, 100);
+            let maxMsWarpSpeed = maxWarpSpeed * AU_IN_M;
+            const accelDist = AU_IN_M;
+            const decelDist = maxMsWarpSpeed / kDecel;
+            const minimumDist = accelDist + decelDist;
+            let cruiseTime = 0;
+
+            if (minimumDist > warpDist) {
+                maxMsWarpSpeed = (warpDist * kAccel * kDecel) / (kAccel + kDecel);
+            } else {
+                cruiseTime = (warpDist - minimumDist) / maxMsWarpSpeed;
+            }
+
+            const accelTime = Math.log(maxMsWarpSpeed / kAccel) / kAccel;
+            const decelTime = Math.log(maxMsWarpSpeed / warpDropoutSpeed) / kDecel;
+
+            const totalTime = cruiseTime + accelTime + decelTime;
+            return Math.ceil(totalTime);
+        }
+
+        function calculateTime() {
+            const maxWarpSpeed = parseFloat(document.getElementById('speed').value);
+            const distKm = parseFloat(document.getElementById('distanceKm').value);
+            const distAu = parseFloat(document.getElementById('distanceAu').value);
+            if (distKm && distAu) {
+                document.getElementById('result').innerText = 'Enter either "Distance (km)" or "Distance (au)"';
+                return;
+            }
+
+            const distM = distKm ? distKm * 1000 : distAu * AU_IN_M;
+            const result = calculateTimeInWarp(maxWarpSpeed, 200, distM);
+            document.getElementById('result').innerText = `Total Time: ${result} seconds`;
+        }      
+    </script>
+</body>
+
+</html>
