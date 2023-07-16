@@ -43,14 +43,16 @@
 <body>
     <div class="container">
         <h1>Warp Time Calculator</h1>
-        <label for="speed">Warp Speed (au/s):</label>
-        <input type="number" id="speed" step="0.01">
+        <label for="warpSpeed">Warp Speed (au/s):</label>
+        <input type="number" id="warpSpeed" step="0.01">
+        <label for="subwarpSpeed">Subwarp Speed (m/s):</label>
+        <input type="number" id="subwarpSpeed" step="1">        
         <label for="distanceKm">Distance (km):</label>
         <input type="number" id="distanceKm" step="1">
         <label for="distanceAu">Distance (au):</label>
         <input type="number" id="distanceAu" step="0.01">
         <button onclick="calculateTime()">Calculate</button>
-        <div id="result">Enter Warp Speed (au/s) and either "Distance (km)" or "Distance (au)</div>
+        <div id="result">Enter Warp Speed (au/s), speed (m/s) and either "Distance (km)" or "Distance (au)</div>
     </div>
 
     <script>
@@ -80,7 +82,8 @@
         }
 
         function calculateTime() {
-            const maxWarpSpeed = parseFloat(document.getElementById('speed').value);
+            const maxWarpSpeed = parseFloat(document.getElementById('warpSpeed').value);
+            const maxSubwarpSpeed = parseFloat(document.getElementById('subwarpSpeed').value);
             const distKm = parseFloat(document.getElementById('distanceKm').value);
             const distAu = parseFloat(document.getElementById('distanceAu').value);
             if (distKm && distAu) {
@@ -89,7 +92,7 @@
             }
 
             const distM = distKm ? distKm * 1000 : distAu * AU_IN_M;
-            const result = calculateTimeInWarp(maxWarpSpeed, 200, distM);
+            const result = calculateTimeInWarp(maxWarpSpeed, maxSubwarpSpeed, distM);
             document.getElementById('result').innerText = `Total Time: ${result} seconds`;
         }      
     </script>
