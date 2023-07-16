@@ -9,7 +9,7 @@
         }
 
         .container {
-            max-width: 530px;
+            max-width: 350px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -56,14 +56,14 @@
     </div>
 
     <script>
-        const AU_IN_M = 149597870700;
+        const auInM = 149597870700;
 
         function calculateTimeInWarp(maxWarpSpeed, maxSubwarpSpeed, warpDist) {
             const kAccel = maxWarpSpeed;
             const kDecel = Math.min(maxWarpSpeed / 3, 2);
             const warpDropoutSpeed = Math.min(maxSubwarpSpeed / 2, 100);
-            let maxMsWarpSpeed = maxWarpSpeed * AU_IN_M;
-            const accelDist = AU_IN_M;
+            let maxMsWarpSpeed = maxWarpSpeed * auInM;
+            const accelDist = auInM;
             const decelDist = maxMsWarpSpeed / kDecel;
             const minimumDist = accelDist + decelDist;
             let cruiseTime = 0;
@@ -86,13 +86,17 @@
             const maxSubwarpSpeed = parseFloat(document.getElementById('subwarpSpeed').value);
             const distKm = parseFloat(document.getElementById('distanceKm').value);
             const distAu = parseFloat(document.getElementById('distanceAu').value);
+            if (!maxWarpSpeed && !maxSubwarpSpeed) {
+                document.getElementById('result').innerText = 'Enter either "Distance (km)" or "Distance (au)"';
+                return;
+            }            
             if (distKm && distAu) {
                 document.getElementById('result').innerText = 'Enter either "Distance (km)" or "Distance (au)"';
                 return;
             }
 
-            const distM = distKm ? distKm * 1000 : distAu * AU_IN_M;
-            const result = calculateTimeInWarp(maxWarpSpeed, maxSubwarpSpeed, distM);
+            const distM = distKm ? distKm * 1000 : distAu * auInM;
+            const result = calculateTimeInWarp(maxWarpSpeed, Math.min(maxSubwarpSpeed, 200), distM);
             document.getElementById('result').innerText = `Total Time: ${result} seconds`;
         }      
     </script>
